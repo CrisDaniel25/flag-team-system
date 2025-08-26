@@ -33,13 +33,13 @@ pids/
 
 # ----- Variables de entorno y secretos -----
 # (Mantén un .env.example con claves ficticias si quieres compartir formato)
-.env
-.env.*
-*.env
-**/.env
-**/.env.local
-**/.env.*.local
-!.env.example
+# .env
+# .env.*
+# *.env
+# **/.env
+# **/.env.local
+# **/.env.*.local
+# !.env.example
 
 # ----- Archivos de editor/IDE -----
 .vscode/
