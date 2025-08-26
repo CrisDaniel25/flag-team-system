@@ -1,91 +1,35 @@
-# ──────────────────────────────────────────────────────────────────────────────
-# Docker & Nginx — serve Angular + proxy /api + Postgres + MinIO
-# ──────────────────────────────────────────────────────────────────────────────
-# Two production-grade layouts:
-#  • Option A (recommended): Single origin with Nginx reverse proxy
-#  • Option B: Separate origins (useful in dev)
-# This file includes docker-compose, Nginx configs, and env wiring.
-
-# ──────────────────────────────────────────────────────────────────────────────
-# docker-compose.yml (root)
-# ──────────────────────────────────────────────────────────────────────────────
-version: "3.9"
 services:
+  api:
+    build:
+      context: ./backend
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://flag:flagpass@db:5432/flagdb
+      # CORS ya no importa, pero puedes dejarlo
+      - CORS_ORIGINS=http://localhost:8080,http://sidedominicana.com:8080,https://sidedominicana.com
+    expose:
+      - "3000"           # expuesto a la red interna; (opcional) ports si lo quieres fuera
+    depends_on:
+      - db
+
+  web:
+    build:
+      context: ./flag-team-web
+    ports:
+      - "8080:80"        # la web pública queda en :8080
+    depends_on:
+      - api
+    # Nginx hablará con 'api:3000' por red interna de compose
+
   db:
     image: postgres:16
-    container_name: flag_pg
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      - POSTGRES_USER=flag
+      - POSTGRES_PASSWORD=flagpass
+      - POSTGRES_DB=flagdb
     volumes:
-      - db_data:/var/lib/postgresql/data
-      - ./db/init:/docker-entrypoint-initdb.d:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 5s
-      timeout: 3s
-      retries: 30
-    ports: ["5432:5432"]
-
-  api:
-    build: ./backend
-    container_name: api
-    environment:
-      NODE_ENV: production
-      PORT: 3000
-      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-      # Auth
-      JWT_SECRET: ${JWT_SECRET}
-      # CORS only needed for Option B
-      CORS_ORIGIN: http://localhost:8080
-      # S3/MinIO
-      S3_ENDPOINT: http://minio:9000
-      S3_REGION: us-east-1
-      S3_BUCKET: flagteam
-      S3_ACCESS_KEY: ${S3_ACCESS_KEY}
-      S3_SECRET_KEY: ${S3_SECRET_KEY}
-      S3_FORCE_PATH_STYLE: "true"
-      S3_PUBLIC_BASE: http://localhost:9000
-      INIT_ADMIN_EMAIL: ${INIT_ADMIN_EMAIL}
-      INIT_ADMIN_PASSWORD: ${INIT_ADMIN_PASSWORD}
-    depends_on:
-      db: { condition: service_healthy }
-      minio: { condition: service_started }
-    ports: ["3000:3000"]
-
-  # Web server (Nginx) serving Angular build + proxy /api
-  web:
-    build: ./flag-team-web
-    container_name: web
-    depends_on: [api]
-    ports: ["8080:80"]
-
-  # MinIO: S3-compatible object storage
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    environment:
-      MINIO_ROOT_USER: ${S3_ACCESS_KEY}
-      MINIO_ROOT_PASSWORD: ${S3_SECRET_KEY}
-    command: server /data --console-address ":9001"
-    volumes:
-      - minio_data:/data
-    ports:
-      - "9000:9000"   # S3 API
-      - "9001:9001"   # Web console
-
-  # One-time bucket + policy init
-  minio-setup:
-    image: minio/mc:latest
-    depends_on: [minio]
-    entrypoint: ["/bin/sh","-c"]
-    command: >
-      "mc alias set local http://minio:9000 ${S3_ACCESS_KEY} ${S3_SECRET_KEY} &&
-       mc mb --ignore-existing local/${S3_BUCKET} &&
-       mc anonymous set download local/${S3_BUCKET} &&
-       echo 'Bucket ready'"
+      - ./db/init:/docker-entrypoint-initdb.d
+      - dbdata:/var/lib/postgresql/data
 
 volumes:
-  db_data:
-  minio_data:
+  dbdata:

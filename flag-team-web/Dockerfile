@@ -4,9 +4,11 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm i --legacy-peer-deps
 COPY . .
-ARG API_URL=""
+# flag-team-web/Dockerfile (fase build)
+ARG API_URL="/api"
 ENV NG_APP_API_URL=$API_URL
 RUN npm run build
+
 
 # Serve stage
 FROM nginx:alpine
