@@ -1,0 +1,89 @@
+# =============================
+# .gitignore — SkyRunners (monorepo)
+# =============================
+
+# ----- Dependencias (Node) -----
+**/node_modules/
+**/bower_components/
+
+# ----- Builds / bundles / caches -----
+**/dist/
+**/build/
+**/.angular/
+**/.angular/cache/
+**/.cache/
+**/coverage/
+**/tmp/
+**/temp/
+**/.sass-cache
+**/.eslintcache
+
+# ----- Logs -----
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# ----- Datos de ejecución -----
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# ----- Variables de entorno y secretos -----
+# (Mantén un .env.example con claves ficticias si quieres compartir formato)
+.env
+.env.*
+*.env
+**/.env
+**/.env.local
+**/.env.*.local
+!.env.example
+
+# ----- Archivos de editor/IDE -----
+.vscode/
+.idea/
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.code-workspace
+
+# ----- Archivos del sistema operativo -----
+.DS_Store
+Thumbs.db
+Icon
+
+
+# ----- Docker: datos locales -----
+db/data/
+db/backups/
+docker/*.log
+
+# Mantener migraciones SQL
+!db/init/**
+
+# ----- Subidas locales (si usas filesystem; si usas S3 no aplica) -----
+uploads/
+**/uploads/
+
+# ----- Nginx (archivos temporales/logs) -----
+nginx/*.log
+nginx/cache/
+
+# ----- Paquetes y archivos comprimidos generados -----
+*.tgz
+*.zip
+*.tar
+*.tar.gz
+
+# ----- Angular específico (por si cambia el nombre del folder) -----
+flag-team-web/.angular/
+flag-team-web/dist/
+
+# ----- IMPORTANTE: lockfiles NO se ignoran -----
+# package-lock.json / pnpm-lock.yaml / yarn.lock deben committearse
+# para builds reproducibles.
