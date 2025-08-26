@@ -67,8 +67,8 @@ docker/*.log
 !db/init/**
 
 # ----- Subidas locales (si usas filesystem; si usas S3 no aplica) -----
-uploads/
-**/uploads/
+# uploads/
+# **/uploads/
 
 # ----- Nginx (archivos temporales/logs) -----
 nginx/*.log
