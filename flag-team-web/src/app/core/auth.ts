@@ -15,6 +15,8 @@ export class Auth {
   isAdmin = computed(() => this._user()?.role === 'admin');
   token: string | null = null;
 
+    private base = (window as any).NG_APP_API_URL || '';
+
   constructor(private http: HttpClient) {
     const saved = localStorage.getItem('flag.auth');
     if (saved) {
@@ -24,7 +26,7 @@ export class Auth {
   }
 
   login(email: string, password: string) {
-    return this.http.post<LoginResponse>(`${environment.API_URL}/api/auth/login`, { email, password });
+    return this.http.post<LoginResponse>(`${this.base}/api/auth/login`, { email, password });
   }
 
   setSession(token: string, user: User) {
