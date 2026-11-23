@@ -1,6 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
 import { User } from '../model';
-import { environment } from '../../environments/environment.development';
 import { HttpClient } from '@angular/common/http';
 
 interface LoginResponse { token: string; user: User }
