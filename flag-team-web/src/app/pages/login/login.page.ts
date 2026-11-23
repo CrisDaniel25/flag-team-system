@@ -11,6 +11,10 @@ import { FormsModule } from '@angular/forms';
  <div class="min-h-screen grid place-items-center bg-gray-50">
    <div class="card w-full max-w-md">
      <h1 class="text-xl font-semibold mb-4">Iniciar sesión</h1>
+     <div class="mb-4 rounded-xl border border-lime-300 bg-lime-50 p-3 text-sm text-gray-700">
+       <strong>Portfolio demo</strong>
+       <p>Los datos son ficticios y las operaciones de escritura están deshabilitadas.</p>
+     </div>
      <form (ngSubmit)="submit()" class="grid gap-3">
        <input class="input" [(ngModel)]="email" name="email" type="email" placeholder="Correo electrónico" required />
        <input class="input" [(ngModel)]="password" name="password" type="password" placeholder="Contraseña" required />
@@ -26,7 +30,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class LoginPage {
   private auth = inject(Auth); private router = inject(Router);
-  email = ''; password = ''; loading = false; error = '';
+  email = 'demo@portfolio.local'; password = 'demo'; loading = false; error = '';
   submit() {
     this.loading = true; this.error = '';
     this.auth.login(this.email, this.password).subscribe({
