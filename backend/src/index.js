@@ -21,16 +21,22 @@ import adsRouter from './routes/ads.js';
 import publicRouter from './routes/public.js';
 import regulationsRouter from './routes/regulations.js';
 import registrationsRouter from './routes/registrations.js';
+import demoRouter from './routes/demo.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || '';
+const DEMO_MODE = process.env.DEMO_MODE === 'true' || process.env.VERCEL === '1';
 
-
-if (CORS_ORIGIN) app.use(cors({ origin: CORS_ORIGIN }));
+if (DEMO_MODE) app.use(cors({ origin: true }));
+else if (CORS_ORIGIN) app.use(cors({ origin: CORS_ORIGIN }));
 app.use(express.json({ limit: '5mb' }));
+
+if (DEMO_MODE) {
+    app.use('/api', demoRouter);
+}
 
 
 app.get('/api/health', async (_req, res) => {
@@ -67,4 +73,8 @@ app.use((err, _req, res, _next) => {
 });
 
 
-app.listen(PORT, () => console.log(`API listening on http://localhost:${PORT}`));
+if (process.env.VERCEL !== '1') {
+    app.listen(PORT, () => console.log(`API listening on http://localhost:${PORT}`));
+}
+
+export default app;
