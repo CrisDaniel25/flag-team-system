@@ -87,3 +87,6 @@ flag-team-web/dist/
 # ----- IMPORTANTE: lockfiles NO se ignoran -----
 # package-lock.json / pnpm-lock.yaml / yarn.lock deben committearse
 # para builds reproducibles.
+.env
+.env.*
+!.env.example
